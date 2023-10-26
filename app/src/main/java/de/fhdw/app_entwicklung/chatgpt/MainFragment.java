@@ -1,6 +1,7 @@
 package de.fhdw.app_entwicklung.chatgpt;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +21,12 @@ public class MainFragment extends Fragment {
     private final ActivityResultLauncher<LaunchSpeechRecognition.SpeechRecognitionArgs> getTextFromSpeech = registerForActivityResult(
             new LaunchSpeechRecognition(),
             query -> {
-
+                MainActivity.backgroundExecutorService.execute(() -> {
+                    ChatGpt chatGpt = new ChatGpt("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");
+                    String answer = chatGpt.getChatCompletion(query);
+                    getTextView().setText(answer);
+                    Log.d("c", "setText");
+                });
             });
 
     public MainFragment() {
@@ -35,13 +41,9 @@ public class MainFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        getAskButton().setOnClickListener(v -> MainActivity.backgroundExecutorService.execute(() ->
-        {
-            ChatGpt chatGpt = new ChatGpt("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");
-            String answer = chatGpt.getChatCompletion("What's the answer to the universe and everything?");
-            getTextView().setText(answer);
-        }));
+        getAskButton().setOnClickListener(v ->
+            getTextFromSpeech.launch(new LaunchSpeechRecognition.SpeechRecognitionArgs())
+        );
     }
 
     private TextView getTextView() {

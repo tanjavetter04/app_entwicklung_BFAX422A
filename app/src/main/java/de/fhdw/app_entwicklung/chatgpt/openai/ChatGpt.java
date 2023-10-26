@@ -1,5 +1,7 @@
 package de.fhdw.app_entwicklung.chatgpt.openai;
 
+import android.util.Log;
+
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatCompletionResult;
 import com.theokanning.openai.completion.chat.ChatMessage;
@@ -31,12 +33,12 @@ public class ChatGpt {
                     .maxTokens(2048)
                     .logitBias(new HashMap<>())
                     .build();
-
+            Log.d("b", "created chatgpt");
             ChatCompletionResult result = service.createChatCompletion(chatCompletionRequest);
             if (result.getChoices().size() != 1) {
                 throw new RuntimeException("Received unexpected number of chat completions: should be 1, but received " + result.getChoices().size());
             }
-
+            Log.d("b", "received answer");
             return result.getChoices().get(0).getMessage().getContent();
         }
         finally {
